@@ -1,4 +1,4 @@
-from flask import Flask, g
+from flask import Flask, g, render_template
 import sqlite3
 
 app = Flask(__name__)
@@ -53,9 +53,7 @@ def show_post(post_id):
   curr = db.cursor()
   curr.execute("select * from posts where id = ?", (post_id,))
   row = curr.fetchone()
-  title = row['title']
-  body = row['body']
-  return "%s: %s\n" % (title, body)
+  return render_template('post.html', entry=row, site={'name':app.config['SITE_NAME']})
 
 
 # . venv/bin/activate
