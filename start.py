@@ -56,19 +56,6 @@ def show_post(post_id):
   return render_template('post.html', entry=row, site={'name':app.config['SITE_NAME']})
 
 
-# . venv/bin/activate
-
-# to make a basic config-driven mvc cms bbq
-#  - setup:
-#    - get config
-#    - connect to db
-#  - basic op
-#    - grab first post
-#    - get template
-#    - apply post variables to template
-#    - display template
-
-
 if __name__ == '__main__':
   app.run()
 
