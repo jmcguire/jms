@@ -5,6 +5,8 @@ Get better at Python by reinventing the wheel. Specifically, a CMS.
 ## THE SMALL TODO
 
   - unit testing
+  - add default variables to templates without duplicate code (i.e. sitename)
+  - logging in, requiring logged in users for some functions
 
 ## THE LARGE TODO
 
