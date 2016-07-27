@@ -46,6 +46,15 @@ def show_config(config_var):
   return "config_var: %r\n" % app.config[config_var]
 
 
+@app.route("/posts")
+def show_all_posts():
+  db = get_db()
+  cursor = db.cursor()
+  cursor.execute("select * from posts")
+  posts = cursor.fetchall()
+  return render_template('show_all_posts.html', posts=posts, site={'name':app.config['SITE_NAME']})
+
+
 @app.route("/post/<int:post_id>")
 def show_post(post_id):
   db = get_db()
