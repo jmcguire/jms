@@ -4,6 +4,10 @@ Get better at Python by reinventing the wheel. Specifically, a CMS.
 
 ## THE SMALL TODO
 
+  - list of posts
+    - paging
+  - tags
+    - list by tag, with paging
   - unit testing
   - add default variables to templates without duplicate code (i.e. sitename)
   - logging in, requiring logged in users for some functions

@@ -1,7 +1,7 @@
 {% extends 'wrap.html' %}
 {% block body %}
 
-<form>
+<form method="post">
 <label>title: <input type="text" name="title" text="{{ title or '' }}"></label>
 <label>body: <input type="text" name="body" text="{{ body or '' }}"></label>
 <input type="submit">

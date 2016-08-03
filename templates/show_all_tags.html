@@ -1,0 +1,19 @@
+{% extends 'wrap.html' %}
+{% block body %}
+
+<h1>All tags</h1>
+
+{% if tags %}
+
+  {% for t in tags %}
+    <h2>{{ t.name }}</h2>
+  {% endfor %}
+
+{% else %}
+
+  <p>No tags</p>
+
+{% endif %}
+
+{% endblock %}
+

@@ -22,14 +22,28 @@ def init_if_empty(force=False):
   """if the database is empty, initialize it"""
   db = get_db()
   cursor = db.cursor()
-  cursor.execute("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='table_name';")
+  cursor.execute("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='posts';")
   row = cursor.fetchone()
   cursor.close()
   if force or row[0] == 0:
     print "database is empty, initializing it..."
     with open(app.config['DB_INIT'], 'r') as f:
-      db.executescript(f.read())
-      db.commit()
+      try:
+        db.executescript(f.read())
+      except:
+        print "...failed to initialize database"
+        db.rollback()
+        raise
+      else:
+        print "...success!"
+        db.commit()
+  else:
+    print "using existing database"
+
+@app.teardown_appcontext
+def close_db(error):
+  if hasattr(g, 'db'):
+    g.db.close()
 
 with app.app_context():
   init_if_empty()
@@ -45,6 +59,8 @@ def hello():
 def show_config(config_var):
   return "config_var: %r\n" % app.config[config_var]
 
+
+# post routes
 
 @app.route("/posts")
 def show_all_posts():
@@ -106,6 +122,63 @@ def create_post():
   # show new post to the user
   flash("You made a new post")
   return redirect(url_for('show_post', post_id=post_id))
+
+
+# tag routes
+
+@app.route("/tags")
+def show_all_tags():
+  db = get_db()
+  cursor = db.cursor()
+  cursor.execute("select * from tags")
+  tags = cursor.fetchall()
+  return render_template('show_all_tags.html', tags=tags, site={'name':app.config['SITE_NAME']})
+
+
+@app.route("/tag/<int:tag_id>")
+def show_tag(tag_id):
+  db = get_db()
+  cursor = db.cursor()
+  cursor.execute("select * from tags where id = ?", (tag_id,))
+  row = cursor.fetchone()
+  if row:
+    return render_template('tag.html', entry=row, site={'name':app.config['SITE_NAME']})
+  else:
+    return render_template('tag_not_found.html', tag_id=tag_id, site={'name':app.config['SITE_NAME']})
+
+
+@app.route("/tag")
+def show_new_tag():
+  """show form to create a new tag"""
+  return render_template('create_tag.html', site={'name':app.config['SITE_NAME']})
+
+
+@app.route("/tag", methods=['POST'])
+def create_tag():
+  """create a new tag from a submitted form"""
+  # get fields
+  name = request.form.get('name', None)
+
+  # error check required fields
+  errors = []
+  if name is None:
+    errors.append('Name cannot be empty')
+
+  if errors:
+    for e in errors:
+      flash(e)
+    return render_template('create_tag.html', name=name, site={'name':app.config['SITE_NAME']})
+
+  # insert into database
+  db = get_db()
+  cursor = db.cursor()
+  cursor.execute("insert into tags ('name') values (?)", (name,))
+  db.commit()
+  tag_id = cursor.lastrowid
+
+  # show new tag to the user
+  flash("You made a new tag")
+  return redirect(url_for('show_tag', tag_id=tag_id))
 
 
 if __name__ == '__main__':
