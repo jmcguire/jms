@@ -8,13 +8,14 @@ app = Flask(__name__)
 app.config.from_pyfile('config.cfg')
 app.secret_key = app.config['SECRET_KEY']
 
+
 # connect to db
 
 def get_db():
   """return the db connection, create it if it doesn't exist yet"""
   db = getattr(g, 'db', None)
   if db is None:
-    db = g._database = sqlite3.connect('sqlite3.db')
+    db = g.db = sqlite3.connect('sqlite3.db')
     db.row_factory = sqlite3.Row
   return db
 
@@ -68,7 +69,9 @@ def show_all_posts():
   cursor = db.cursor()
   cursor.execute("select * from posts")
   posts = cursor.fetchall()
-  return render_template('show_all_posts.html', posts=posts, site={'name':app.config['SITE_NAME']})
+
+  add_template_variable('posts', posts)
+  return my_render_template('show_all_posts.html')
 
 
 @app.route("/post/<int:post_id>")
@@ -78,15 +81,17 @@ def show_post(post_id):
   cursor.execute("select * from posts where id = ?", (post_id,))
   row = cursor.fetchone()
   if row:
-    return render_template('post.html', entry=row, site={'name':app.config['SITE_NAME']})
+    add_template_variable('entry', row)
+    return my_render_template('post.html')
   else:
-    return render_template('post_not_found.html', post_id=post_id, site={'name':app.config['SITE_NAME']})
+    add_template_variable('post_id', post_id)
+    return my_render_template('post_not_found.html')
     
 
 @app.route("/post")
 def show_new_post():
   """show form to create a new post"""
-  return render_template('create_post.html', site={'name':app.config['SITE_NAME']})
+  return my_render_template('create_post.html')
 
 
 @app.route("/post", methods=['POST'])
@@ -98,19 +103,17 @@ def create_post():
 
   # error check required fields
   errors = []
-  if title is None:
-    print "one\n"
+  if not title:
     errors.append('Title cannot be empty')
-  if body is None:
-    print "two\n"
+  if not body:
     errors.append('Body cannot be empty')
 
   if errors:
-    print "three\n"
     for e in errors:
       flash(e)
-    print "four\n"
-    return render_template('create_post.html', title=title, body=body, site={'name':app.config['SITE_NAME']})
+    add_template_variable('title', title)
+    add_template_variable('body', body)
+    return my_render_template('create_post.html')
 
   # insert into database
   db = get_db()
@@ -132,7 +135,9 @@ def show_all_tags():
   cursor = db.cursor()
   cursor.execute("select * from tags")
   tags = cursor.fetchall()
-  return render_template('show_all_tags.html', tags=tags, site={'name':app.config['SITE_NAME']})
+
+  add_template_variable('tags', tags)
+  return my_render_template('show_all_tags.html')
 
 
 @app.route("/tag/<int:tag_id>")
@@ -142,15 +147,17 @@ def show_tag(tag_id):
   cursor.execute("select * from tags where id = ?", (tag_id,))
   row = cursor.fetchone()
   if row:
-    return render_template('tag.html', entry=row, site={'name':app.config['SITE_NAME']})
+    add_template_variable('entry', row)
+    return my_render_template('tag.html')
   else:
-    return render_template('tag_not_found.html', tag_id=tag_id, site={'name':app.config['SITE_NAME']})
+    add_template_variable('tag_id', tag_id)
+    return my_render_template('tag_not_found.html')
 
 
 @app.route("/tag")
 def show_new_tag():
   """show form to create a new tag"""
-  return render_template('create_tag.html', site={'name':app.config['SITE_NAME']})
+  return my_render_template('create_tag.html')
 
 
 @app.route("/tag", methods=['POST'])
@@ -161,13 +168,14 @@ def create_tag():
 
   # error check required fields
   errors = []
-  if name is None:
+  if not name:
     errors.append('Name cannot be empty')
 
   if errors:
     for e in errors:
       flash(e)
-    return render_template('create_tag.html', name=name, site={'name':app.config['SITE_NAME']})
+    add_template_variable('name', name)
+    return my_render_template('create_tag.html')
 
   # insert into database
   db = get_db()
@@ -179,6 +187,21 @@ def create_tag():
   # show new tag to the user
   flash("You made a new tag")
   return redirect(url_for('show_tag', tag_id=tag_id))
+
+
+# make templates a bit easier to work with
+
+def add_template_variable(key, value):
+  """add a variable that will be made available to the template"""
+  if getattr(g, 'template_vars', None) is None:
+    g.template_vars = {}
+  g.template_vars[key] = value
+
+
+def my_render_template(template_file):
+  """render the template, with our added variables"""
+  add_template_variable('site', {'name': app.config['SITE_NAME']})
+  return render_template(template_file, **g.template_vars)
 
 
 if __name__ == '__main__':
