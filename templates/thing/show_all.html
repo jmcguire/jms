@@ -1,0 +1,23 @@
+{% extends 'wrap.html' %}
+{% block body %}
+
+<h1>All {{ thing.human_name }}</h1>
+
+{% if entries %}
+
+  {% for entry in entries %}
+    <ul>
+      {% for col in thing.cols %}
+        <li>{{ col.human_name }}: {{ entry[col.db_name] }}</li>
+      {% endfor %}
+    <ul>
+  {% endfor %}
+
+{% else %}
+
+  <p>No {{ thing.human_name }}</p>
+
+{% endif %}
+
+{% endblock %}
+

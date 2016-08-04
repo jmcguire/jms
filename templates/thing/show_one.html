@@ -1,0 +1,11 @@
+{% extends 'wrap.html' %}
+{% block body %}
+
+<ul>
+{% for col in thing.cols %}
+  <ul>{{ col.human_name }}: {{ entry[col.db_name] }}</ul>
+{% endfor %}
+</ul>
+
+{% endblock %}
+

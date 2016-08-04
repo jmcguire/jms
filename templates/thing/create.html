@@ -1,0 +1,14 @@
+{% extends 'wrap.html' %}
+{% block body %}
+
+<h1>Create a {{ thing.human_name }}</h1>
+
+<form method="post">
+{% for col in thing.cols %}
+  <label>{{ col.human_name }}: <input type="{{ col.form_type }}" name="{{ col.name }}" text="{{ TOFILLIN or '' }}"></label>
+{% endfor %}
+<input type="submit">
+</form>
+
+{% endblock %}
+
