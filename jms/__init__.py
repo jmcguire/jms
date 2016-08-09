@@ -1,9 +1,6 @@
-from flask import Flask, g, render_template, request, flash, redirect, url_for
-
+from flask import Flask
 app = Flask(__name__)
 
-import thing
-from jms.template import *
 from jms.db import init_if_empty
 
 # routing libraries
