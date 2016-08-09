@@ -1,11 +1,9 @@
 from flask import g
-
 from jms import app
 from jms.template import *
 from jms.db import get_db
 
-#from flask import Flask, g, render_template, request, flash, redirect, url_for
-#import thing
+# post routes
 
 @app.route("/posts")
 def show_all_posts():

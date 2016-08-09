@@ -2,7 +2,7 @@ from flask import g
 from jms import app
 import sqlite3
 
-__all__ = ['get_db', 'init_if_empty', 'close_db']
+__all__ = ['get_db']
 
 # connect to db
 
@@ -35,7 +35,6 @@ def init_if_empty(force=False):
         db.commit()
   else:
     print "using existing database"
-
 
 @app.teardown_appcontext
 def close_db(error):
