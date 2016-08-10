@@ -19,14 +19,15 @@ class Thing(object):
     field = ( type: 'string', ... ) a more complicated type
     """
     self.config = data
+    self.name = name
     self.table_name = name
 
     if type(data) is list:
       self.human_name = readable(name)
-      self.plural = pluralize(name)
+      self.plural_name = pluralize(name)
     elif type(data) is dict:
       self.human_name = data['_human_name'] or readable(name)
-      self.plural = data['_plural'] or pluralize(name)
+      self.plural_name = data['_plural'] or pluralize(name)
 
     # load the columns
     self.cols = {}
@@ -42,11 +43,14 @@ class Thing(object):
       elif type(data) is dict:
         self._load_col(field, data[field])
 
+    self.field_names = map(lambda x: self.cols[x]['field_name'], self.cols)
+
   def _load_col(self, name, data=None):
     """load a column data into the self.col dict"""
 
     col_config = {}
     col_config['name'] = name
+    col_config['field_name'] = name
 
     if data is None:
       col_config['human_name'] = readable(name)

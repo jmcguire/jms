@@ -67,3 +67,4 @@ def create_post():
   # show new post to the user
   flash("You made a new post")
   return redirect(url_for('show_post', post_id=post_id))
+

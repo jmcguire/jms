@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, url_for
 app = Flask(__name__)
 
 from jms.db import init_if_empty
@@ -7,11 +7,16 @@ from jms.db import init_if_empty
 import jms.basic
 import jms.posts
 import jms.tags
-import jms.generic_crud
+from jms.generic_crud import create_routes_from_things
 
 # load config
 app.config.from_pyfile('config.cfg')
 app.secret_key = app.config['SECRET_KEY']
+
+# load things
+from jms.thing import load_things
+things = load_things(app.config['THINGS'])
+create_routes_from_things(things)
 
 # load db
 with app.app_context():
