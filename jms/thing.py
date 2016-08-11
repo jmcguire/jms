@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 def load_things(config):
   things = {}
 
@@ -20,19 +22,19 @@ class Thing(object):
     """
     self.config = data
     self.name = name
-    self.table_name = name
 
     if type(data) is list:
       self.human_name = readable(name)
       self.plural_name = pluralize(name)
+      self.table_name = self.plural_name
     elif type(data) is dict:
       self.human_name = data['_human_name'] or readable(name)
       self.plural_name = data['_plural'] or pluralize(name)
+      self.table_name = data['_table_name'] or self.plural_name
 
     # load the columns
-    self.cols = {}
+    self.cols = OrderedDict()
     for field in data:
-
       # skip meta info
       if field[0] == '_':
         continue

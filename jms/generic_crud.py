@@ -10,7 +10,7 @@ def show_one(thing, id_):
   """show a single thing"""
   db = get_db()
   cursor = db.cursor()
-  cursor.execute("select * from %s where id = ?" % thing.table_name, (tag_id,))
+  cursor.execute("select * from %s where id = ?" % thing.table_name, (id_,))
   row = cursor.fetchone()
 
   add_template_variable('thing', thing)
@@ -41,7 +41,7 @@ def show_new(thing):
 
 
 def create(thing):
-  """create a new thing"""
+  """create a new thing form a post"""
   fields = {}
   errors = []
 
@@ -83,31 +83,17 @@ def delete(thing, id_):
 # turn a thing into a series of CRUD operations
 
 def create_routes_from_thing(thing):
-
-  #this is the definition of route
-  def route(self, rule, **options):
-    def decorator(f):
-      endpoint = options.pop('endpoint', None)
-      self.add_url_rule(rule, endpoint, f, **options)
-      return f
-    return decorator
-
-  app.add_url_rule("/%s/<int:id_>" % thing.name, 'show_one_%s' % thing.name, lambda x: show_one(thing, x))
+  app.add_url_rule("/%s/<int:id_>" % thing.name, 'show_one_%s' % thing.name, lambda id_: show_one(thing, id_))
   app.add_url_rule("/%s" % thing.plural_name, 'show_all_%s' % thing.name, lambda: show_all(thing))
   app.add_url_rule("/%s" % thing.name, 'show_new_%s' % thing.name, lambda: show_new(thing))
   app.add_url_rule("/%s" % thing.name, 'create_%s' % thing.name, lambda: create(thing), methods=['POST'])
-  app.add_url_rule("/%s<int:id_>" % thing.name, 'delete_%s' % thing.name, lambda x: delete(thing, x), methods=['DELETE'])
-
-  # @app.route("/FOO/<int:id_>") show_one()
-  # @app.route("/FOOs") show_all()
-  # @app.route("/FOO") show_new()
-  # @app.route("/FOO", methods=['POST']) create()
-  # @app.route("/FOO/<int:id_>", methods=['DELETE']) delete()
+  #app.add_url_rule("/%s<int:id_>" % thing.name, 'delete_%s' % thing.name, lambda id_: delete(thing, id_), methods=['DELETE'])
 
 def create_routes_from_things(things):
   """a shortcut to the above"""
   for thing in things.values():
     create_routes_from_thing(thing)
+
 
 # manage our thing objects, which lets us interact with the config file
 # constructs
@@ -120,8 +106,8 @@ def get_things():
 
   return things
 
-def get_thing(thing):
+def get_thing(name):
   """return the thing config we need"""
   things = get_things()
-  return things[thing]
+  return things[name]
 

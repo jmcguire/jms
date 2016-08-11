@@ -5,8 +5,6 @@ from jms.db import init_if_empty
 
 # routing libraries
 import jms.basic
-import jms.posts
-import jms.tags
 from jms.generic_crud import create_routes_from_things
 
 # load config

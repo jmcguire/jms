@@ -8,7 +8,7 @@
   {% for entry in entries %}
     <ul>
       {% for col in thing.cols.values() %}
-        <li>{{ col.human_name }}: {{ entry[col.db_name] }}</li>
+        <li>{{ col.human_name }}: {{ entry[col.field_name] }}</li>
       {% endfor %}
     <ul>
   {% endfor %}
