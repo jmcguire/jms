@@ -1,6 +1,6 @@
 from flask import g
 from jms import app
-from jms.template import *
+from jms.view import *
 from jms.db import get_db
 
 # post routes

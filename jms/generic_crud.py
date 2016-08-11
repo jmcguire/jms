@@ -1,6 +1,6 @@
 from flask import g
 from jms import app
-from jms.template import *
+from jms.view import *
 from jms.db import get_db
 from jms.thing import load_things
 
@@ -16,10 +16,10 @@ def show_one(thing, id_):
   add_template_variable('thing', thing)
   if row:
     add_template_variable('entry', row)
-    return my_render_template('thing/show_one.html')
+    return my_render_template('generic/show_one.html')
   else:
     add_template_variable('id', id_)
-    return my_render_template('thing/not_found.html')
+    return my_render_template('generic/not_found.html')
 
 
 def show_all(thing):
@@ -31,13 +31,13 @@ def show_all(thing):
 
   add_template_variable('thing', thing)
   add_template_variable('entries', entries)
-  return my_render_template('thing/show_all.html')
+  return my_render_template('generic/show_all.html')
 
 
 def show_new(thing):
   """show a form to create a new thing"""
   add_template_variable('thing', thing)
-  return my_render_template('thing/create.html')
+  return my_render_template('generic/create.html')
 
 
 def create(thing):
@@ -55,7 +55,7 @@ def create(thing):
       flash(e)
     add_template_variable('thing', thing)
     add_template_variable('fields', fields)
-    return my_render_template('thing/create_post.html')
+    return my_render_template('generic/create_post.html')
 
   # insert into database
 
