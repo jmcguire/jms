@@ -30,6 +30,10 @@ In a traditional MVC, the controller runs the business logic, and decides which 
  - *view* - takes in just the data on the stash. it doesn't interact with models, but may have a read-only view of them.
 
 
+## AUTHOR
+
+Justin McGuire &mdash; <jm@landedstar.com> &mdash; <a href="https://twitter.com/landedstar">@landedstar.com</a> &mdash; http://landedstar.com
+
 ## LICENSE
 
 MIT
